@@ -42,9 +42,15 @@ void display_topbar(bool todo) {
     }
 }
 
+void display_botbar() {
+    printf("\n-- [a] to add a task | [d] to change tasks state --");
+    std::cout.flush();
+}
+
 void display_interface(Pos pos, TaskStorage task_storage, bool todo) {
     display_topbar(todo);
     task_storage.display_tasks(pos.col, todo);   
+    display_botbar();
 }
 
 void clear_screen() {

@@ -3,7 +3,7 @@
 #define TODO() throw std::logic_error("TODO: Not yet implemented")
 
 void TaskStorage::add_task(std::string title) {
-    tasks.push_back(Task{ .title = title, .todo = false});
+    tasks.push_back(Task{ .title = title, .todo = true});
 }
 
 void TaskStorage::remove_task(std::string& title) {
