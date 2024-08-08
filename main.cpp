@@ -1,7 +1,9 @@
 #include <termios.h>
 #include <cstdlib>
 #include <unistd.h>
-#include <string.h>
+#include <string>
+#include <thread>
+#include <chrono>
 
 #include "task.h"
 
@@ -59,21 +61,37 @@ void clear_screen() {
 }
 
 #define MAX_TASK_LEN 30
+bool validate(std::string title, int len) {
+    if(len >= MAX_TASK_LEN) {
+        printf("Title too long!");
+        std::cout.flush();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        return false;
+    }
+
+    return true;
+}
+
 void add_task(TaskStorage *task_storage) {
-    char title[MAX_TASK_LEN];
+    std::string title;
     clear_screen();
     printf("What task: ");
     on_exit(); 
+    
+    getline(std::cin, title);
 
-    if(fgets(title, MAX_TASK_LEN, stdin) != NULL) {
-        size_t len = strlen(title);
+    size_t len = title.length();
+
+    if(validate(title, len)) {
         if(len > 0 && title[len-1] == '\n') {
             title[len-1] = '\0';
         }
-    }
-    enable_raw_mode();
+        enable_raw_mode();
+        task_storage->add_task(title);
 
-    task_storage->add_task(title);
+    } else {
+        add_task(task_storage);
+    }
 }
 
 int handle_input(TaskStorage task_storage) {
