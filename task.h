@@ -18,7 +18,11 @@ class TaskStorage {
         void edit_task(Task old_task, int index);
         void remove_task(std::string& title);
         void add_task(std::string title);
+        void toggle_task(int index);
         int get_tasks_count();
+         
+        std::pair<int, int> get_indiv_count();
+
 
         void display_tasks(int col, bool todo);
 

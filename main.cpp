@@ -4,6 +4,7 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <thread>
 
 #include "task.h"
 
@@ -46,7 +47,7 @@ void display_topbar(bool todo) {
 }
 
 void display_botbar() {
-    printf("\n-- [a] to add a task | [d] to change tasks state --");
+    printf("\n-- [a] to add a task | [t] toggle tasks state --");
     std::cout.flush();
 }
 
@@ -104,6 +105,10 @@ int handle_input(TaskStorage task_storage) {
 
     char c;
     while(true) {
+        auto counts = task_storage.get_indiv_count();
+        // printf("%d : %d", counts.first, counts.second);
+        // std::cout.flush();
+        // std::this_thread::sleep_for(std::chrono::seconds(4));
         read(STDIN_FILENO, &c, 1);
 
         switch (c) {
@@ -115,8 +120,13 @@ int handle_input(TaskStorage task_storage) {
                 break;
 
             case 'j': // Move Down one
-                if (pos.col < task_storage.get_tasks_count()-1) 
-                    pos.col++;
+                if(todo) {
+                    if(pos.col < counts.first -1) 
+                        pos.col++;
+                } else {
+                    if(pos.col < counts.second -1) 
+                        pos.col++;
+                }
                 break;
 
             case 'k': // Move up one
@@ -124,7 +134,14 @@ int handle_input(TaskStorage task_storage) {
                     pos.col--;
                 break;
 
+            case 't': // Change status
+                task_storage.toggle_task(pos.col);
+                pos.col = counts.first -1;
+
+                break;
+
             case 9: // Pressing Tab changes the tasks to show
+                pos.col = 0;
                 todo = !todo;
         }
         clear_screen();

@@ -26,6 +26,24 @@ int TaskStorage::get_tasks_count() {
     return tasks.size();
 }
 
+// Return todo_count ; done_count
+std::pair<int, int> TaskStorage::get_indiv_count() {
+    int done_count; 
+
+    int todo_count = std::count_if(tasks.begin(), tasks.end(),
+            [](const Task& task) {
+                return task.todo;
+            });
+   
+    done_count = tasks.size() - todo_count; 
+   
+    return {todo_count, done_count};
+}
+
+void TaskStorage::toggle_task(int index) {
+    tasks[index].todo = !tasks[index].todo;
+}
+
 void TaskStorage::display_tasks(int col, bool todo) {
     std::ostringstream oss;
     
