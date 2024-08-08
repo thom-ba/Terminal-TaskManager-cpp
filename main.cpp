@@ -1,6 +1,7 @@
 #include <termios.h>
 #include <cstdlib>
 #include <unistd.h>
+#include <string.h>
 
 #include "task.h"
 
@@ -57,6 +58,24 @@ void clear_screen() {
     std::cout << "\033[2J\033[H"; 
 }
 
+#define MAX_TASK_LEN 30
+void add_task(TaskStorage *task_storage) {
+    char title[MAX_TASK_LEN];
+    clear_screen();
+    printf("What task: ");
+    on_exit(); 
+
+    if(fgets(title, MAX_TASK_LEN, stdin) != NULL) {
+        size_t len = strlen(title);
+        if(len > 0 && title[len-1] == '\n') {
+            title[len-1] = '\0';
+        }
+    }
+    enable_raw_mode();
+
+    task_storage->add_task(title);
+}
+
 int handle_input(TaskStorage task_storage) {
     bool todo = true;
     Pos pos{.row = 0, .col = 0 };
@@ -70,20 +89,24 @@ int handle_input(TaskStorage task_storage) {
         read(STDIN_FILENO, &c, 1);
 
         switch (c) {
-            case 'q': 
+            case 'q': // Exit the TaskManager
                 return 0;
 
-            case 'j':
+            case 'a':
+                add_task(&task_storage);
+                break;
+
+            case 'j': // Move Down one
                 if (pos.col < task_storage.get_tasks_count()-1) 
                     pos.col++;
                 break;
 
-            case 'k':
+            case 'k': // Move up one
                 if (pos.col > 0)
                     pos.col--;
                 break;
 
-            case 9:
+            case 9: // Pressing Tab changes the tasks to show
                 todo = !todo;
         }
         clear_screen();

@@ -28,7 +28,7 @@ int TaskStorage::get_tasks_count() {
 
 void TaskStorage::display_tasks(int col, bool todo) {
     std::ostringstream oss;
-
+    
     for(int i = 0; i < (int) tasks.size(); i++) {
         if (todo && !tasks[i].todo) {
             continue;
