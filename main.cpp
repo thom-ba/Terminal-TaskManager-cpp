@@ -88,7 +88,7 @@ void add_task(TaskStorage *task_storage) {
             title[len-1] = '\0';
         }
         enable_raw_mode();
-        task_storage->add_task(title);
+        task_storage->add_task(title, true);
 
     } else {
         add_task(task_storage);
@@ -106,9 +106,6 @@ int handle_input(TaskStorage task_storage) {
     char c;
     while(true) {
         auto counts = task_storage.get_indiv_count();
-        // printf("%d : %d", counts.first, counts.second);
-        // std::cout.flush();
-        // std::this_thread::sleep_for(std::chrono::seconds(4));
         read(STDIN_FILENO, &c, 1);
 
         switch (c) {
@@ -135,8 +132,22 @@ int handle_input(TaskStorage task_storage) {
                 break;
 
             case 't': // Change status
-                task_storage.toggle_task(pos.col);
-                pos.col = counts.first -1;
+                if ((todo) && (pos.col < counts.first || pos.col < 0)) {
+                    task_storage.toggle_task(pos.col, todo);
+
+                    if(pos.col == counts.first -1 && pos.col > 0) {
+                        pos.col--;
+                    }
+                } 
+
+                if ((todo == false) && (pos.col < counts.second || pos.col < 0)) {
+                    task_storage.toggle_task(pos.col, todo);
+
+                    if(pos.col == counts.second -1 && pos.col > 0) {
+                        pos.col--;
+                    }
+                }
+
 
                 break;
 
@@ -151,8 +162,9 @@ int handle_input(TaskStorage task_storage) {
 
 int main() {
     TaskStorage taskStorage;
-    taskStorage.add_task("Test 1");
-    taskStorage.add_task("Test 2");
+    taskStorage.add_task("Test 1", true);
+    taskStorage.add_task("Test 2", true);
+    taskStorage.add_task("Test 3", false);
 
     handle_input(taskStorage);
 }
