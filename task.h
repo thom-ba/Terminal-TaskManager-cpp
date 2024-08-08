@@ -15,7 +15,10 @@ struct Task {
 
 class TaskStorage {
     public:
-        void edit_task(Task old_task, int index);
+        std::vector<Task> todos;
+        std::vector<Task> dones;
+        
+        void edit_task(std::string title, int index, bool todo);
 
         void remove_task(int col, bool todo);
         void remove_todo(std::string& title);
@@ -31,8 +34,7 @@ class TaskStorage {
         void display_tasks(int col, bool todo);
 
     private:
-        std::vector<Task> todos;
-        std::vector<Task> dones;
+        
 };
 
 #endif // TASK_H

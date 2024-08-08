@@ -9,8 +9,14 @@
 #include "task.h"
 
 termios orig_termios;
+
+void clear_screen() {
+    std::cout << "\033[2J\033[H"; 
+}
+
 void on_exit() {
     tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
+    clear_screen();
 }
 
 void enable_raw_mode() {
@@ -47,7 +53,9 @@ void display_topbar(bool todo) {
 }
 
 void display_botbar() {
-    printf("\n-- [a] to add a task | [t] toggle tasks state --");
+    printf("\n-- [a] to add a task | "\
+            "[t] toggle tasks state | "\
+            "[e] edit task --");
     std::cout.flush();
 }
 
@@ -57,33 +65,46 @@ void display_interface(Pos pos, TaskStorage task_storage, bool todo) {
     display_botbar();
 }
 
-void clear_screen() {
-    std::cout << "\033[2J\033[H"; 
-}
+
 
 #define MAX_TASK_LEN 30
-bool validate(std::string title, int len) {
-    if(len >= MAX_TASK_LEN) {
-        printf("Title too long!");
+bool validate(TaskStorage task_storage, std::string title, int len) {
+    bool validated = true;
+    if(len >= MAX_TASK_LEN)
+        validated = false;
+    
+    if ((std::find_if(task_storage.todos.begin(), 
+                task_storage.todos.end(), 
+                [&title](const Task& task) {
+                    return task.title == title;
+                }) != task_storage.todos.end()
+       ) || 
+        (std::find_if(task_storage.dones.begin(), 
+                      task_storage.dones.end(),
+                      [&title](const Task& task) {
+                        return task.title == title;
+                      }) != task_storage.dones.end()))
+        validated = false;
+
+    if (validated == false) {
+        printf("Title too long or exists already!");
         std::cout.flush();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        return false;
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
-    return true;
+    return validated;
 }
 
 void add_task(TaskStorage *task_storage) {
     std::string title;
-    clear_screen();
-    printf("What task: ");
     on_exit(); 
+    printf("What task: ");
     
     getline(std::cin, title);
 
     size_t len = title.length();
 
-    if(validate(title, len)) {
+    if(validate(*task_storage, title, len)) {
         if(len > 0 && title[len-1] == '\n') {
             title[len-1] = '\0';
         }
@@ -93,6 +114,31 @@ void add_task(TaskStorage *task_storage) {
     } else {
         add_task(task_storage);
     }
+}
+
+void edit_task(TaskStorage *task_storage, int index, bool todo) {
+    std::string title;
+
+    std::string old_title = todo ? task_storage->todos[index].title : task_storage->dones[index].title;
+    clear_screen();
+    on_exit();
+    printf("Edit Task: %s -> ", old_title.c_str());
+
+    getline(std::cin, title);
+    size_t len = title.length();
+
+    if(validate(*task_storage, title, len)) {
+        if(len > 0 && title[len-1] == '\n') {
+            title[len-1] = '\0';
+        }
+        task_storage->remove_task(index, todo); 
+        task_storage->add_task(title, todo);
+
+    } else {
+        edit_task(task_storage, index, todo);
+    }
+
+    enable_raw_mode();
 }
 
 int handle_input(TaskStorage task_storage) {
@@ -110,6 +156,7 @@ int handle_input(TaskStorage task_storage) {
 
         switch (c) {
             case 'q': // Exit the TaskManager
+                clear_screen();
                 return 0;
 
             case 'a':
@@ -148,6 +195,10 @@ int handle_input(TaskStorage task_storage) {
                     }
                 }
 
+                break;
+
+            case 'e': // Edit Task
+                edit_task(&task_storage, pos.col, todo);
 
                 break;
 

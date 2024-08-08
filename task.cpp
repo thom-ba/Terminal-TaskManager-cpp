@@ -34,8 +34,9 @@ void TaskStorage::remove_done(std::string& title) {
             );
 }
 
-void TaskStorage::edit_task(Task old_task, int index) {
-    TODO();
+void TaskStorage::edit_task(std::string title, int index, bool todo) {
+    remove_task(index, todo);
+    add_task(title, todo);
 }
 
 int TaskStorage::get_tasks_count() {
