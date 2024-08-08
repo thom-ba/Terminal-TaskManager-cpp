@@ -32,14 +32,19 @@ struct Pos {
 const char* yellow_bg = "\033[43m";
 const char* reset = "\033[0m";
 
-void display_topbar() {
-    printf("%sTodo%s | ", yellow_bg, reset);
-    printf("Done\n");
+void display_topbar(bool todo) {
+    if(todo) {
+        printf("%sTodo%s | ", yellow_bg, reset);
+        printf("Done\n");
+    } else {
+        printf("Todo | ");
+        printf("%sDone%s\n", yellow_bg, reset);
+    }
 }
 
-void display_interface(Pos pos, TaskStorage task_storage) {
-    display_topbar();
-    task_storage.display_tasks(pos.col);   
+void display_interface(Pos pos, TaskStorage task_storage, bool todo) {
+    display_topbar(todo);
+    task_storage.display_tasks(pos.col, todo);   
 }
 
 void clear_screen() {
@@ -47,14 +52,14 @@ void clear_screen() {
 }
 
 int handle_input(TaskStorage task_storage) {
+    bool todo = true;
     Pos pos{.row = 0, .col = 0 };
 
     clear_screen();
     enable_raw_mode();
-    display_interface(pos, task_storage); 
+    display_interface(pos, task_storage, todo); 
 
     char c;
-    bool todos = true;
     while(true) {
         read(STDIN_FILENO, &c, 1);
 
@@ -73,10 +78,10 @@ int handle_input(TaskStorage task_storage) {
                 break;
 
             case 9:
-                printf("Tab");
+                todo = !todo;
         }
         clear_screen();
-        display_interface(pos, task_storage);
+        display_interface(pos, task_storage, todo);
     }    
 }
 

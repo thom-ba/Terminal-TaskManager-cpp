@@ -10,6 +10,7 @@
 
 struct Task {
     std::string title;
+    bool todo;
 };
 
 class TaskStorage {
@@ -19,7 +20,7 @@ class TaskStorage {
         void add_task(std::string title);
         int get_tasks_count();
 
-        void display_tasks(int col);
+        void display_tasks(int col, bool todo);
 
     private:
         std::vector<Task> tasks;
