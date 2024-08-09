@@ -1,3 +1,4 @@
+
 # TUI Task Manager
 
 A terminal-based task management application written in C++. This application allows you to add, edit, and toggle tasks between "Todo" and "Done" states.
@@ -10,41 +11,35 @@ A terminal-based task management application written in C++. This application al
 - Navigate through tasks using keyboard shortcuts
 
 ## Build Instructions
-
 To build and run the Task Manager, follow these instructions:
-
 1. **Clone the repository:**
+  ``` bash
+   git clone git@github.com:thom-ba/tui_task_manager-cpp.git
+   cd tui_task_manager-cpp
+   ```
+   
+  Build the project using make:
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
-
-    Build the project using make:
-
-    bash
-
-make
+    make
+ ```
 
 This will compile the source code and produce an executable named task_manager.
 
 Run the executable:
 
-bash
-
+ ```bash
 ./task_manager
-
+```
 Clean up build files:
 To remove object files and the executable, use:
-
-bash
-
+```bash
 make clean
+```
 
 To fully clean the project (including the executable), use:
-
-bash
-
-    make distclean
-
+```bash
+make distclean
+```
 Usage
 
     [a]: Add a new task
