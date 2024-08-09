@@ -1,35 +1,31 @@
 # Compiler
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -I./
+CXXFLAGS = -std=c++17 -Iinclude
+
+# Directories
+SRC_DIR = src
+OBJ_DIR = build
+INC_DIR = include
 
 # Source files
-SRC = main.cpp task.cpp term_utils.cpp
-
-# Object files
-OBJ = $(SRC:.cpp=.o)
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 # Executable name
-TARGET = task_manager
+TARGET = tui-task
 
-# Default target
+# Build rules
 all: $(TARGET)
 
-# Link the executable
-$(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJ)
+$(TARGET): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS)
 
-# Compile source files to object files
-%.o: %.cpp
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up build files
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -rf $(OBJ_DIR) $(TARGET)
 
-# Clean up build files and remove executable
-distclean: clean
-	rm -f $(TARGET)
-
-# Phony targets
-.PHONY: all clean distclean
+.PHONY: all clean
 
