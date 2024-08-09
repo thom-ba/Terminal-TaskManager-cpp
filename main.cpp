@@ -2,43 +2,18 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <string>
-#include <thread>
 #include <chrono>
 #include <thread>
 
 #include "task.h"
-
-termios orig_termios;
-
-void clear_screen() {
-    std::cout << "\033[2J\033[H"; 
-}
-
-void on_exit() {
-    tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
-    clear_screen();
-}
-
-void enable_raw_mode() {
-    termios raw;
-
-    tcgetattr(STDIN_FILENO, &orig_termios);
-    raw = orig_termios;
-
-    raw.c_lflag &= ~(ICANON | ECHO);
-    raw.c_cc[VMIN] = 1;
-    raw.c_cc[VTIME] = 0;
-
-    tcsetattr(STDIN_FILENO, TCSANOW, &raw);
-
-    atexit(on_exit);
-}
+#include "term_utils.h"
 
 struct Pos {
     int row;
     int col;
 };
 
+#define MAX_TASK_LEN 30
 const char* yellow_bg = "\033[43m";
 const char* reset = "\033[0m";
 
@@ -59,15 +34,14 @@ void display_botbar() {
     std::cout.flush();
 }
 
-void display_interface(Pos pos, TaskStorage task_storage, bool todo) {
+void display_interface(TaskStorage task_storage, Pos pos, bool todo, Terminal term) {
+    term.clear_screen();
     display_topbar(todo);
     task_storage.display_tasks(pos.col, todo);   
     display_botbar();
+    term.enable_raw_mode();
 }
 
-
-
-#define MAX_TASK_LEN 30
 bool validate(TaskStorage task_storage, std::string title, int len) {
     bool validated = true;
     if(len >= MAX_TASK_LEN)
@@ -95,9 +69,10 @@ bool validate(TaskStorage task_storage, std::string title, int len) {
     return validated;
 }
 
-void add_task(TaskStorage *task_storage) {
+void add_task(TaskStorage *task_storage, Terminal term) {
     std::string title;
-    on_exit(); 
+    
+    term.clear_screen();
     printf("What task: ");
     
     getline(std::cin, title);
@@ -108,20 +83,17 @@ void add_task(TaskStorage *task_storage) {
         if(len > 0 && title[len-1] == '\n') {
             title[len-1] = '\0';
         }
-        enable_raw_mode();
         task_storage->add_task(title, true);
 
     } else {
-        add_task(task_storage);
+        add_task(task_storage, term);
     }
 }
 
-void edit_task(TaskStorage *task_storage, int index, bool todo) {
+void edit_task(TaskStorage *task_storage, int index, bool todo, Terminal term) {
     std::string title;
 
     std::string old_title = todo ? task_storage->todos[index].title : task_storage->dones[index].title;
-    clear_screen();
-    on_exit();
     printf("Edit Task: %s -> ", old_title.c_str());
 
     getline(std::cin, title);
@@ -135,19 +107,15 @@ void edit_task(TaskStorage *task_storage, int index, bool todo) {
         task_storage->add_task(title, todo);
 
     } else {
-        edit_task(task_storage, index, todo);
+        edit_task(task_storage, index, todo, term);
     }
-
-    enable_raw_mode();
 }
 
-int handle_input(TaskStorage task_storage) {
+int handle_input(TaskStorage& task_storage, Terminal& term) {
     bool todo = true;
-    Pos pos{.row = 0, .col = 0 };
+    Pos pos{0, 0};
 
-    clear_screen();
-    enable_raw_mode();
-    display_interface(pos, task_storage, todo); 
+    display_interface(task_storage, pos, todo, term);
 
     char c;
     while(true) {
@@ -156,11 +124,13 @@ int handle_input(TaskStorage task_storage) {
 
         switch (c) {
             case 'q': // Exit the TaskManager
-                clear_screen();
+                term.clear_screen();
                 return 0;
 
             case 'a':
-                add_task(&task_storage);
+                term.disable_raw_mode();
+                add_task(&task_storage, term);
+                term.enable_raw_mode();
                 break;
 
             case 'j': // Move Down one
@@ -198,7 +168,10 @@ int handle_input(TaskStorage task_storage) {
                 break;
 
             case 'e': // Edit Task
-                edit_task(&task_storage, pos.col, todo);
+                term.clear_screen();
+                term.disable_raw_mode();
+                edit_task(&task_storage, pos.col, todo, term);
+                term.enable_raw_mode();
 
                 break;
 
@@ -206,16 +179,18 @@ int handle_input(TaskStorage task_storage) {
                 pos.col = 0;
                 todo = !todo;
         }
-        clear_screen();
-        display_interface(pos, task_storage, todo);
+        term.clear_screen();
+        display_interface(task_storage, pos, todo, term);
     }    
 }
 
 int main() {
+    Terminal term;
     TaskStorage taskStorage;
+
     taskStorage.add_task("Test 1", true);
     taskStorage.add_task("Test 2", true);
     taskStorage.add_task("Test 3", false);
 
-    handle_input(taskStorage);
+    handle_input(taskStorage, term);
 }

@@ -6,7 +6,7 @@ CXXFLAGS = -std=c++11 -Wall -g
 TARGET = task_manager
 
 # Define the source files
-SRCS = main.cpp task.cpp
+SRCS = main.cpp task.cpp term_utils.cpp
 
 # Define the object files
 OBJS = $(SRCS:.cpp=.o)
