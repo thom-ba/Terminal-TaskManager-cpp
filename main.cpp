@@ -8,29 +8,34 @@
 #include "task.h"
 #include "term_utils.h"
 
+#define GRAY_BG "\033[48;5;237m"
+#define LIGHT_GRAY_BG "\033[48;5;237m"
+#define GRAY "\033[48;5;240m"
+#define RESET "\033[0m"
+#define MAX_TASK_LEN 50
+
 struct Pos {
     int row;
     int col;
 };
 
-#define MAX_TASK_LEN 30
-const char* yellow_bg = "\033[43m";
-const char* reset = "\033[0m";
-
 void display_topbar(bool todo) {
+    printf(" -- -- TUI TaskManager -- --\n");
+
     if(todo) {
-        printf("%sTodo%s | ", yellow_bg, reset);
+        printf("%sTodo%s | ", GRAY, RESET);
         printf("Done\n");
     } else {
         printf("Todo | ");
-        printf("%sDone%s\n", yellow_bg, reset);
+        printf("%sDone%s\n", GRAY, RESET);
     }
 }
 
 void display_botbar() {
-    printf("\n-- [a] to add a task | "\
-            "[t] toggle tasks state | "\
-            "[e] edit task --");
+    printf("\n-- [a] to add a task | "    \
+            "[t] toggle tasks state | "    \
+            "[e] edit task "    \
+            "[q] quit --");
     std::cout.flush();
 }
 

@@ -1,31 +1,35 @@
-# Define the compiler and compilation flags
+# Compiler
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -g
+CXXFLAGS = -std=c++17 -Wall -Wextra -I./
 
-# Define the target executable
+# Source files
+SRC = main.cpp task.cpp term_utils.cpp
+
+# Object files
+OBJ = $(SRC:.cpp=.o)
+
+# Executable name
 TARGET = task_manager
 
-# Define the source files
-SRCS = main.cpp task.cpp term_utils.cpp
-
-# Define the object files
-OBJS = $(SRCS:.cpp=.o)
-
-# Default rule to build the target
+# Default target
 all: $(TARGET)
 
-# Rule to link the object files into the executable
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+# Link the executable
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJ)
 
-# Rule to compile source files into object files
+# Compile source files to object files
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Rule to clean up generated files
+# Clean up build files
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -f $(OBJ) $(TARGET)
+
+# Clean up build files and remove executable
+distclean: clean
+	rm -f $(TARGET)
 
 # Phony targets
-.PHONY: all clean
+.PHONY: all clean distclean
 
