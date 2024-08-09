@@ -1,3 +1,6 @@
+// Copyright (C) 2024 Thomas "thom-ba" Baumeister
+// See GitHub for License
+
 #include <termios.h>
 #include <cstdlib>
 #include <unistd.h>
@@ -7,6 +10,7 @@
 
 #include "task.h"
 #include "term_utils.h"
+#include "task_storage_io.h"
 
 #define GRAY_BG "\033[48;5;237m"
 #define LIGHT_GRAY_BG "\033[48;5;237m"
@@ -192,10 +196,9 @@ int handle_input(TaskStorage& task_storage, Terminal& term) {
 int main() {
     Terminal term;
     TaskStorage taskStorage;
-
-    taskStorage.add_task("Test 1", true);
-    taskStorage.add_task("Test 2", true);
-    taskStorage.add_task("Test 3", false);
-
+    
+    load_tasks(&taskStorage);
     handle_input(taskStorage, term);
+
+    save_tasks(taskStorage);
 }

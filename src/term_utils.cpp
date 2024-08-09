@@ -1,4 +1,8 @@
+// Copyright (C) 2024 Thomas "thom-ba" Baumeister
+// See GitHub for License
+
 #include "term_utils.h"
+#include "task_storage_io.h"
 
 Terminal::Terminal() : raw_mode_enabled(false) {
     enable_raw_mode();

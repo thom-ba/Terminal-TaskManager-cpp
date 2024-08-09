@@ -1,3 +1,6 @@
+// Copyright (C) 2024 Thomas "thom-ba" Baumeister
+// See GitHub for License
+
 #ifndef TERMUTILS_H
 #define TERMUTILS_H
 

@@ -1,3 +1,6 @@
+// Copyright (C) 2024 Thomas "thom-ba" Baumeister
+// See GitHub for License
+
 #include "task.h"
 
 #define TODO() throw std::logic_error("TODO: Not yet implemented")
