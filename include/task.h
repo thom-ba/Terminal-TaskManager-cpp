@@ -1,3 +1,6 @@
+// Copyright (C) 2024 Thomas "thom-ba" Baumeister
+// See GitHub for License
+
 #ifndef TASK_H
 #define TASK_H
 
