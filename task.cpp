@@ -10,41 +10,12 @@ void TaskStorage::add_task(std::string title, bool todo) {
     }
 }
 
-void TaskStorage::remove_todo(std::string& title) {
-    todos.erase(std::remove_if(
-                todos.begin(), 
-                todos.end(), 
-                [&title](const Task& task) { 
-                return task.title == title;
-                }
-                ), 
-            todos.end()
-            );
-}
-
-void TaskStorage::remove_done(std::string& title) {
-    dones.erase(std::remove_if(
-                dones.begin(), 
-                dones.end(), 
-                [&title](const Task& task) { 
-                return task.title == title;
-                }
-                ), 
-            dones.end()
-            );
-}
-
-void TaskStorage::edit_task(std::string title, int index, bool todo) {
-    remove_task(index, todo);
-    add_task(title, todo);
-}
-
-int TaskStorage::get_tasks_count() {
+int TaskStorage::get_tasks_count() const {
     return todos.size() + dones.size();
 }
 
 // Return todo_count ; done_count
-std::pair<int, int> TaskStorage::get_indiv_count() {
+std::pair<int, int> TaskStorage::get_indiv_count() const {
     return {todos.size(), dones.size() };
 }
 
@@ -67,14 +38,14 @@ void TaskStorage::toggle_task(int col, bool todo) {
     }
 }
 
-void TaskStorage::display_tasks(int col, bool todo) {
+void TaskStorage::display_tasks(int col, bool todo) const {
     std::ostringstream oss;
     const std::vector<Task>& tasks = todo ? todos : dones;
     int tasks_size = tasks.size();
 
     for (int i = 0; i < tasks_size; ++i) {
         // Determine the sign based on whether this index is the current one
-        std::string curr_sign = (col == i) ? "[x] " : "[ ] ";
+        std::string curr_sign = (col == i) ? CURR_BOX : BOX;
 
         // Append the task title
         oss << curr_sign << tasks[i].title << "\n";
