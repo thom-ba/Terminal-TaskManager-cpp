@@ -8,6 +8,10 @@
 #include <sstream>
 #include <iostream>
 
+const std::string CURR_BOX = "[x] ";
+const std::string BOX = "[ ] ";
+
+
 struct Task {
     std::string title;
     bool todo;
@@ -18,20 +22,14 @@ class TaskStorage {
         std::vector<Task> todos;
         std::vector<Task> dones;
         
-        void edit_task(std::string title, int index, bool todo);
-
         void remove_task(int col, bool todo);
-        void remove_todo(const std::string& title);
-        void remove_done(const std::string& title);
 
         void add_task(std::string title, bool todo);
         void toggle_task(int col, bool todo);
 
-        int get_tasks_count();
-        std::pair<int, int> get_indiv_count();
-
-
-        void display_tasks(int col, bool todo);
+        int get_tasks_count() const;
+        std::pair<int, int> get_indiv_count() const;
+        void display_tasks(int col, bool todo) const;
 
     private:
         
