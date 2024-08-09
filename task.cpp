@@ -10,7 +10,7 @@ void TaskStorage::add_task(std::string title, bool todo) {
     }
 }
 
-void TaskStorage::remove_todo(std::string& title) {
+void TaskStorage::remove_todo(const std::string& title) {
     todos.erase(std::remove_if(
                 todos.begin(), 
                 todos.end(), 
@@ -22,7 +22,7 @@ void TaskStorage::remove_todo(std::string& title) {
             );
 }
 
-void TaskStorage::remove_done(std::string& title) {
+void TaskStorage::remove_done(const std::string& title) {
     dones.erase(std::remove_if(
                 dones.begin(), 
                 dones.end(), 

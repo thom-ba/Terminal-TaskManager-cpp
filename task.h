@@ -21,8 +21,8 @@ class TaskStorage {
         void edit_task(std::string title, int index, bool todo);
 
         void remove_task(int col, bool todo);
-        void remove_todo(std::string& title);
-        void remove_done(std::string& title);
+        void remove_todo(const std::string& title);
+        void remove_done(const std::string& title);
 
         void add_task(std::string title, bool todo);
         void toggle_task(int col, bool todo);
