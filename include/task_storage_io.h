@@ -4,18 +4,17 @@
 #ifndef TASK_STORAGE_IO_H
 #define TASK_STORAGE_IO_H
 
-#include <fstream>  
+#include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
 
 #include "task.h"
 
-#define TODO_FILE "./todos.txt"
+void ensure_file_exists();
 
+void save_tasks(const TaskStorage &task_storage);
 
-void save_tasks(const TaskStorage& task_storage);
-
-void load_tasks(TaskStorage* task_storage);
+void load_tasks(TaskStorage *task_storage);
 
 #endif // TASK_STORAGE_IO_H
-

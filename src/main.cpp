@@ -196,7 +196,9 @@ int handle_input(TaskStorage& task_storage, Terminal& term) {
 int main() {
     Terminal term;
     TaskStorage taskStorage;
-    
+
+    ensure_file_exists();
+
     load_tasks(&taskStorage);
     handle_input(taskStorage, term);
 
